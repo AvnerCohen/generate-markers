@@ -15,6 +15,20 @@
 	        height: 100%;
             width: 100%;
 	      }
+
+          #map-filter-controls
+            {
+                color: white;
+                border-radius: 8px; 
+                background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzAwMDAwMCIgc3RvcC1vcGFjaXR5PSIwLjY1Ii8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDAwMDAiIHN0b3Atb3BhY2l0eT0iMC41Ii8+CiAgPC9saW5lYXJHcmFkaWVudD4KICA8cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSJ1cmwoI2dyYWQtdWNnZy1nZW5lcmF0ZWQpIiAvPgo8L3N2Zz4=);
+                background: -moz-linear-gradient(top,  rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.5) 100%); /* FF3.6+ */
+                background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0.65)), color-stop(100%,rgba(0,0,0,0.5))); /* Chrome,Safari4+ */
+                background: -webkit-linear-gradient(top,  rgba(0,0,0,0.65) 0%,rgba(0,0,0,0.5) 100%); /* Chrome10+,Safari5.1+ */
+                background: -o-linear-gradient(top,  rgba(0,0,0,0.65) 0%,rgba(0,0,0,0.5) 100%); /* Opera 11.10+ */
+                background: -ms-linear-gradient(top,  rgba(0,0,0,0.65) 0%,rgba(0,0,0,0.5) 100%); /* IE10+ */
+                background: linear-gradient(top,  rgba(0,0,0,0.65) 0%,rgba(0,0,0,0.5) 100%); /* W3C */
+                filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6000000', endColorstr='#80000000',GradientType=0 ); /* IE6-8 */
+            }
 	    </style>
      
         <meta charset="utf-8" />
@@ -34,7 +48,8 @@
 	        map = new google.maps.Map(document.getElementById('map_canvas'),
 	            myOptions);
 
-            google.maps.event.addListener(map, 'idle', generateSome);
+             $(".trigger-generation").on("click", generateSome);
+             map.controls[google.maps.ControlPosition.TOP_RIGHT].push($("#map-filter-controls")[0]);
 
 	      }
 
@@ -50,11 +65,18 @@
           }
 
           var FACTOR = 1000;
-          var MARKERS_TO_GENERATE = 30;
+          var MARKERS_TO_GENERATE = 35;
           function generateSome(){
            var bounds  = getBounds();
             clearMarkers();
+
+            var value = $(".generation-type option:selected").val();
+            if (true){
             generateMarkers(MARKERS_TO_GENERATE, bounds);
+                }   
+                else{
+                 
+                }
             
           }
 
@@ -89,45 +111,25 @@
 
                 var position = new google.maps.LatLng(lat, lng);
 
-                checkValidityOfPoint({position : position, caption :caption});
+                setMarker({ position: position,
+                            caption: caption });
 
             }
 
 
+            function setMarker(params) {
 
-            function checkValidityOfPoint(params){
-            var request = { latLng: params.position.latLng,
-                            bounds: map.getBounds() };
-              geocoder.geocode(request, function(response, status)
-               {
-                    checkGeocodingResponse(response, status, params);
-                });
-            }
-
-            function checkGeocodingResponse(response, status, params){
-
-             var isGood =  (status == "OK" && 
-                        response && response[0].types != "natural_feature") ?  true : false;
-
-            var color = (isGood) ? "4D00FF" : "FF0033";
-
-            color = (status == "OVER_QUERY_LIMIT") ? "D7FF7A" : color; 
-
-            if(!isGood)
-            {
-                var aa=response;
-            }
-
+                var color = "4D00FF"; // : "FF0033";
                 var pin = getPinByColor(color);
 
-                 var marker = new google.maps.Marker({
+                var marker = new google.maps.Marker({
                     position: params.position,
                     map: map,
                     title: params.caption,
                     icon: pin.image,
                     shadow: pin.shadow
                 });
-                markerGenerator.markers.push(marker);            
+                markerGenerator.markers.push(marker);
 
 
             }
@@ -156,6 +158,15 @@
     </head>
     <body>
      <div id="map_canvas"></div>
+     <div id="map-filter-controls">
+        <select class="generation-type">
+            <option value="random" selected="true">Random</option>         
+            <option value="cities">Cities</option>
+            <option value="restaurants">Restaurants</option>
+         </select><br/>
+           <hr/>
+          <button class="trigger-generation">Do It!</button> 
+     </div>
         <link rel="stylesheet" href="./css/bootstrap.min.css" />
         <link rel="stylesheet" href="/css/bootstrap-responsive.min.css" />
     </body>
