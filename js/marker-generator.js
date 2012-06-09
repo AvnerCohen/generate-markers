@@ -21,11 +21,27 @@ var markerGenerator = function() {
 
         var value = $(".generation-type option:selected").val();
         //Value will be implementaed later on
-        markerGenerator.generateMarkers(markerGenerator.MARKERS_TO_GENERATE, bounds);
+        var to_generate = $("#markers-to-generate").val();
+        if (markerGenerator.validateNumber(to_generate)){
+          markerGenerator.generateMarkers(to_generate, bounds);
+       }
 
 
       }
 
+    var _validateNumber = function(num){
+
+      if (isNaN(num)){
+        return false;
+      }else if (num > markerGenerator.MAX_MARKERS){
+        return false;
+      }else if (num.length == 0){
+        return false;
+      }
+
+      return true;
+
+    }
     var _getBounds = function() {
 
         var bounds = map.getBounds();
@@ -98,6 +114,7 @@ var markerGenerator = function() {
     return {
       init: _init,
       getPinByColor: _getPinByColor,
+      validateNumber : _validateNumber,
       setMarker: _setMarker,
       validateMarker: _validateMarker,
       generateSome: _generateSome,
@@ -106,8 +123,8 @@ var markerGenerator = function() {
       clearMarkers: _clearMarkers,
       getBounds: _getBounds,
       markers: [],
+      MAX_MARKERS : 500,
       FACTOR: 1000,
-      MARKERS_TO_GENERATE: 35
     };
 
   }();
