@@ -35,9 +35,9 @@ http.createServer(function (request, response) {
             }
 
            // var type = mime.lookup(filename);
-            response.writeHead(200, {
+/*            response.writeHead(200, {
                 "Content-Type": "text/html"
-            });
+            });*/
             response.write(file, "binary");
             response.end();
         });
